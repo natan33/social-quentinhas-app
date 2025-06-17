@@ -29,64 +29,40 @@ body {
 
 /* Statistics Cards */
 .stats-card {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
-    position: relative;
-}
+        border-radius: 0; /* Removido arredondamento para deixar mais retangular */
+        overflow: hidden;
+        /* Sombra para dar o efeito de profundidade */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Transição suave para hover */
+    }
 
-.stats-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
+    .stats-card .card-body {
+        /* Aumentado o padding vertical para alongar o card na vertical */
+        padding: 2rem 1rem; /* 2rem no topo/base, 1rem nas laterais */
+        display: flex; /* Usar flexbox para organizar o conteúdo verticalmente */
+        flex-direction: column; /* Organiza os itens em coluna */
+        justify-content: center; /* Centraliza verticalmente */
+        align-items: center; /* Centraliza horizontalmente */
+        text-align: center; /* Alinha texto ao centro */
+    }
 
-.stats-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.8), rgba(255,255,255,0.3));
-}
+    .stats-card:hover {
+        transform: translateY(-8px); /* Levanta o card no hover para um efeito interativo */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 12px 40px rgba(0, 0, 0, 0.15); /* Sombra mais intensa no hover */
+    }
 
-.stats-icon {
-    font-size: 2.5rem;
-    opacity: 0.8;
-}
+    /* Ajuste para que o texto dentro do card não quebre em várias linhas desnecessariamente */
+    .stats-card small {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block; /* Garante que 'text-overflow' funcione */
+    }
 
-.stats-card h4 {
-    font-weight: 700;
-    font-size: 2rem;
-}
-
-.stats-card small {
-    font-size: 0.85rem;
-    opacity: 0.9;
-    font-weight: 500;
-}
-
-/* Cards */
-.card {
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-    transition: box-shadow 0.3s ease;
-}
-
-.card:hover {
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
-}
-
-.card-header {
-    background: linear-gradient(135deg, hsl(var(--primary-color)), hsl(225 75% 45%));
-    color: white;
-    border: none;
-    font-weight: 600;
-    border-radius: 12px 12px 0 0 !important;
-}
+    /* Espaçamento para o ícone */
+    .stats-icon {
+        margin-bottom: 0.75rem; /* Espaço entre o ícone e o valor/rótulo */
+    }
 
 /* Form Styling */
 .form-control, .form-select {
@@ -327,3 +303,4 @@ body {
     outline: 0;
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* Box-shadow em foco do Bootstrap */
 }
+

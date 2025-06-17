@@ -22,6 +22,8 @@
     <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" />
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -63,6 +65,7 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
 
 
     <!-- Custom JS -->
@@ -90,8 +93,38 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <script>
+        $(document).ready(function () {
+            new Swiper('.mySwiperCards', {
+                loop: true,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                // Configurações padrão para mobile
+                slidesPerView: 2, /* Ajustado para 1.5 para dar uma sensação de próximo card, mas sem cortar muito */
+                centeredSlides: true, /* Centraliza o slide ativo, útil para 1.x slidesPerView */
+                spaceBetween: 10, /* Reduzido o espaço para 10px em mobile */
+                // ... breakpoints para desktop ...
+            });
+        });
 
+        $(document).ready(function () {
+            const $collapse = $('#filtrosCollapse');
+            const $icon = $('#iconeSeta');
+
+            $collapse.on('show.bs.collapse', function () {
+                $icon.removeClass('fa-chevron-down').addClass('fa-chevron-up');
+            });
+
+            $collapse.on('hide.bs.collapse', function () {
+                $icon.removeClass('fa-chevron-up').addClass('fa-chevron-down');
+            });
+        });
+    </script>
 
 
 

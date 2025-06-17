@@ -2,8 +2,7 @@ from app import db,login_manager
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-
-
+from sqlalchemy.orm import relationship 
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -20,6 +19,7 @@ class User(db.Model, UserMixin):
     is_admin = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+    
 
     # Para definir a senha, armazena hash em vez do texto
     def set_password(self, password):
@@ -46,7 +46,11 @@ class Venda(db.Model):
     status_pagamento = db.Column(db.Boolean, nullable=False, default=False)  # True para pago, False para pendente
     data_venda = db.Column(db.DateTime, nullable=False, default=datetime.now())
     preco_unitario = db.Column(db.Float, nullable=False, default=0.0)
-    
+
+    entrega = relationship('VendaEntregue', backref='venda', lazy=True)
+
+    entrega_status =  db.Column(db.Boolean, nullable=True, default=False)
+     
     def __repr__(self):
         return f'<Venda {self.id}: {self.nome_produto} - {self.nome_comprador}>'
     
@@ -57,3 +61,18 @@ class Venda(db.Model):
     @property
     def status_pagamento_texto(self):
         return "Pago" if self.status_pagamento else "Pendente"
+
+
+# NOVO: Definição do modelo VendaEntregue
+class VendaEntregue(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    # Chave estrangeira que referencia o id da tabela Venda
+    venda_id = db.Column(db.Integer, db.ForeignKey('venda.id'), nullable=False)
+    data_entrega = db.Column(db.DateTime, nullable=False, default=datetime.now())
+    status_entrega = db.Column(db.String(50), nullable=False, default='Pendente') # Ex: 'Pendente', 'Entregue', 'Cancelada'
+    observacoes = db.Column(db.Text, nullable=True)
+    nome_vendedor_entrega = db.Column(db.String(100), nullable=True) # NOVO: Vendedor que fez a entrega
+
+    def __repr__(self):
+        return f'<VendaEntregue {self.id} - Venda ID: {self.venda_id} - Status: {self.status_entrega}>'
+

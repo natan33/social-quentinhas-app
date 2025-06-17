@@ -1,170 +1,182 @@
 {% extends "base.html" %}
 
+<style>
+    /* Estilos personalizados para os cards de estatísticas */
+    .stats-card {
+        border-radius: 0;
+        /* REMOVIDO ARREDONDAMENTO PARA DEIXAR MAIS RETANGULAR */
+        overflow: hidden;
+        /* Sombra para dar o efeito de paralelepípedo/profundidade */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        /* Transição suave para hover */
+        /* Removido max-width e margin: auto aqui.
+           O tamanho será controlado pelo Swiper. */
+    }
+
+    .stats-card .card-body {
+        padding: 1rem;
+        /* Ajustado o padding para controlar a altura interna e deixar mais retangular */
+    }
+
+    .stats-card:hover {
+        transform: translateY(-8px);
+        /* Levanta o card no hover para um efeito interativo */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 12px 40px rgba(0, 0, 0, 0.15);
+        /* Sombra mais intensa no hover */
+    }
+
+    /* Ajuste para que o texto dentro do card não quebre em várias linhas desnecessariamente em mobile */
+    .stats-card small {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        /* Garante que 'text-overflow' funcione */
+    }
+
+    /* Estilos para centralizar os slides no Swiper */
+    .swiper-slide {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: auto;
+        /* Permite que o slide se ajuste à altura do conteúdo */
+    }
+</style>
+
 {% block content %}
 <!-- Statistics Cards -->
-<div class="row mb-4 justify-content-center gx-2">
+{% set cards = [
+{'valor': stats.quantidade_total, 'label': 'Total de Quentinhas', 'icon': 'fa-utensils', 'bg': 'bg-success'},
+{'valor': stats.vendas_meninos, 'label': 'Vendas Meninos', 'icon': 'fa-male', 'bg': 'bg-primary'},
+{'valor': stats.vendas_meninas, 'label': 'Vendas Meninas', 'icon': 'fa-female', 'bg': 'bg-danger'},
+{'valor': stats.vendas_igreja, 'label': 'Vendas Igreja', 'icon': 'fa-church', 'bg': 'bg-warning'},
+{'valor': "R$ " ~ stats.valor_total_pago, 'label': 'Total Pago', 'icon': 'fa-money-check-alt', 'bg': 'bg-info'},
+{'valor': "R$ " ~ stats.valor_total_nao_pago, 'label': 'Total Não Pago', 'icon': 'fa-exclamation-triangle', 'bg':
+'bg-secondary'},
+{'valor': "R$ " ~ stats.valor_total, 'label': 'Valor Total', 'icon': 'fa-money-bill-wave', 'bg': 'bg-success'},
+{'valor': "R$ " ~ stats.value_despesas, 'label': 'Valor Despesas Gastas', 'icon': 'fa-church', 'bg': 'bg-warning'},
+{'valor': stats.qtde_quentinhas_pagas, 'label': 'Qtde Pagas', 'icon': 'fa-check-circle', 'bg': 'bg-success'},
+{'valor': stats.qtde_quentinhas_nao_pagas, 'label': 'Qtde Não Pagas', 'icon': 'fa-times-circle', 'bg': 'bg-danger'},
 
-    <div class="col-auto mb-2">
-        <div class="card stats-card bg-success text-white">
+{'valor': stats.qtde_quetinhas_entegues, 'label': 'Qtde Entregue', 'icon': 'fa-check-circle', 'bg': 'bg-primary'},
+{'valor': stats.qtde_n_quetinhas_entegues, 'label': 'Qtde Não Entregue', 'icon': 'fa-times-circle', 'bg': 'bg-secondary'},
+] %}
+
+<!-- Cards de Estatísticas em Layout de Grade Responsivo (FIXO) -->
+<div class="row mb-4 g-3 justify-content-center">
+    {% for card in cards %}
+    <div class="col-6 col-sm-4 col-md-3 col-lg-2"> {# Ajustado as classes de coluna para 2 cards em mobile, 3 em sm, 4
+        em md, e 6 em lg #}
+        <div class="card stats-card {{ card.bg }} text-white h-100">
             <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="mb-0">{{ stats.quantidade_total }}</h4>
-                        <small>Total de Quentinhas</small>
-                    </div>
-                    <div class="stats-icon">
-                        <i class="fas fa-utensils"></i>
-                    </div>
+                {# Conteúdo do card reorganizado para empilhamento vertical #}
+                <div class="stats-icon">
+                    <i class="fas {{ card.icon }} fa-2x"></i> {# Ícone maior para destaque #}
+                </div>
+                <div>
+                    <h5 class="mb-0">{{ card.valor }}</h5>
+                    <small>{{ card.label }}</small>
                 </div>
             </div>
         </div>
     </div>
+    {% endfor %}
+</div>
 
-    <div class="col-auto mb-2">
-        <div class="card stats-card bg-primary text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="mb-0">{{ stats.vendas_meninos }}</h4>
-                        <small>Vendas Meninos</small>
-                    </div>
-                    <div class="stats-icon">
-                        <i class="fas fa-male"></i>
-                    </div>
-                </div>
+<div class="row mb-4 g-3">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Vendas por Grupo</h5>
+            </div>
+            <div class="card-body d-flex justify-content-center align-items-center">
+                <canvas id="vendasPorGrupoChart"></canvas>
             </div>
         </div>
     </div>
-
-    <div class="col-auto mb-2">
-        <div class="card stats-card bg-danger text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="mb-0">{{ stats.vendas_meninas }}</h4>
-                        <small>Vendas Meninas</small>
-                    </div>
-                    <div class="stats-icon">
-                        <i class="fas fa-female"></i>
-                    </div>
-                </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Status de Pagamento</h5>
+            </div>
+            <div class="card-body d-flex justify-content-center align-items-center">
+                <canvas id="statusPagamentoChart"></canvas>
             </div>
         </div>
     </div>
-
-    <div class="col-auto mb-2">
-        <div class="card stats-card bg-warning text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="mb-0">{{ stats.vendas_igreja }}</h4>
-                        <small>Vendas Igreja</small>
-                    </div>
-                    <div class="stats-icon">
-                        <i class="fas fa-female"></i>
-                    </div>
-                </div>
+    <div class="col-12 mt-3">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Vendas Diárias (Últimos 7 Dias)</h5>
             </div>
-        </div>
-    </div>
-
-    <div class="col-auto mb-2">
-        <div class="card stats-card bg-info text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="mb-0">R$ {{ stats.valor_total_pago }}</h4>
-                        <small>Total Pago</small>
-                    </div>
-                    <div class="stats-icon">
-                        <i class="fas fa-money-check-alt"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-auto mb-2">
-        <div class="card stats-card bg-secondary text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="mb-0">R$ {{ stats.valor_total_nao_pago }}</h4>
-                        <small>Total Não Pago</small>
-                    </div>
-                    <div class="stats-icon">
-                        <i class="fas fa-money-check-alt"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="col-auto mb-2">
-        <div class="card stats-card bg-success text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="mb-0">R$ {{ stats.valor_total }}</h4>
-                        <small>Valor Total</small>
-                    </div>
-                    <div class="stats-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                </div>
+            <div class="card-body d-flex justify-content-center align-items-center">
+                <canvas id="vendasDiariasChart"></canvas>
             </div>
         </div>
     </div>
 </div>
-
-
-
-
-<!-- Filters and Actions -->
 <div class="card mb-4">
-    <div class="card-header">
-        <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filtros e Ações</h5>
-    </div>
-    <div class="card-body">
-        <form id="filtrosForm" class="row g-3 mb-3">
-            <div class="col-md-3">
-                
-                <label for="vendedor" class="form-label">Vendedor</label>
-                <!-- <select name="filter_vendedor" id="filter_vendedor" class="shadow-sm" data-placeholder="Vendedor" multiple="multiple">
-                </select> -->
-                <input type="text" class="form-control" id="vendedor" name="vendedor" placeholder="Nome do vendedor">
-            </div>
-            <div class="col-md-3">
-                <label for="comprador" class="form-label">Comprador</label>
-                <input type="text" class="form-control" id="comprador" name="comprador" placeholder="Nome do comprador">
-            </div>
-            <div class="col-md-2">
-                <label for="id" class="form-label">ID</label>
-                <input type="number" class="form-control" id="id" name="id" placeholder="ID da venda">
-            </div>
-            <div class="col-md-4 d-flex align-items-end gap-2">
-                <button type="button" id="btnFiltrar" class="btn btn-primary">
-                    <i class="fas fa-search me-1"></i>Filtrar
-                </button>
-                <button type="button" id="btnLimpar" class="btn btn-secondary">
-                    <i class="fas fa-times me-1"></i>Limpar
-                </button>
-            </div>
-        </form>
 
-        <div class="d-flex gap-2">
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalVenda">
-                <i class="fas fa-plus me-1"></i>Nova Venda
-            </button>
-            <a href="{{ url_for('exportar_excel') }}" class="btn btn-info">
-                <i class="fas fa-file-excel me-1"></i>Exportar Excel
-            </a>
+    <button class="card-header w-100 text-start bg-success text-white border-0" type="button" data-bs-toggle="collapse"
+        data-bs-target="#filtrosCollapse" aria-expanded="false" aria-controls="filtrosCollapse"
+        style="cursor: pointer;">
+        <h5 class="mb-0 d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-filter me-2"></i>Filtros e Ações</span>
+            <i class="fas fa-chevron-down" id="iconeSeta"></i>
+        </h5>
+    </button>
+
+    <div id="filtrosCollapse" class="collapse">
+        <div class="card-body">
+            <form id="filtrosForm" class="row g-3 mb-3" method="GET" action="/">
+                <div class="col-md-3">
+                    <label for="vendedor" class="form-label">Vendedor</label>
+                    <input type="text" class="form-control" id="vendedor" name="vendedor"
+                        placeholder="Nome do vendedor">
+                </div>
+                <div class="col-md-3">
+                    <label for="comprador" class="form-label">Comprador</label>
+                    <input type="text" class="form-control" id="comprador" name="comprador"
+                        placeholder="Nome do comprador">
+                </div>
+                <div class="col-md-2">
+                    <label for="id" class="form-label">ID</label>
+                    <input type="number" class="form-control" id="id" name="id" placeholder="ID da venda">
+                </div>
+                <div class="col-md-2">
+                    <label for="status_pagamento" class="form-label">Status Pagamento</label>
+                    <select class="form-select" id="status_pagamento" name="status_pagamento">
+                        <option value="">Todos</option>
+                        <option value="Pago">Pago</option>
+                        <option value="Pendente">Pendente</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end gap-2">
+                    <button type="button" id="btnFiltrar" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-1"></i>Filtrar
+                    </button>
+                    <button type="button" id="btnLimpar" class="btn btn-secondary w-100">
+                        <i class="fas fa-times me-1"></i>Limpar
+                    </button>
+                </div>
+            </form>
+
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalVenda">
+                    <i class="fas fa-plus me-1"></i>Nova Venda
+                </button>
+                <a href="{{ url_for('exportar_excel') }}" class="btn btn-info">
+                    <i class="fas fa-file-excel me-1"></i>Exportar Excel
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Sales Table -->
+
+
 <div class="card">
     <div class="card-header">
         <h5 class="mb-0"><i class="fas fa-table me-2"></i>Vendas Registradas</h5>
@@ -184,6 +196,7 @@
                         <th>Valor Unit.</th>
                         <th>Valor Total</th>
                         <th>Status Pagamento</th>
+                        <th>Status Entrega</th>
                         <th>Data da Venda</th>
                         <th>Ações</th>
                     </tr>
@@ -201,7 +214,6 @@
     </div>
 </div>
 
-<!-- Modal for Add/Edit Sale -->
 <div class="modal fade" id="modalVenda" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -266,7 +278,81 @@
     </div>
 </div>
 
-<!-- Hidden form for deletion -->
+<div class="modal fade" id="modalEntrega" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Entrega de Pedido</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formEntrega" method="POST" action="{{ url_for('entregar_pedido') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="entrega_vendedor" class="form-label">Nome do Vendedor</label>
+                        <input type="text" class="form-control" id="entrega_vendedor" name="vendedor" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="entrega_comprador" class="form-label">Nome do Comprador</label>
+                        <input type="text" class="form-control" id="entrega_comprador" name="comprador" readonly>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="entrega_quantidade" class="form-label">Quantidade Vendida</label>
+                            <input type="number" class="form-control" id="entrega_quantidade" name="quantidade"
+                                readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="entrega_valor" class="form-label">Valor Total</label>
+                            <input type="text" class="form-control" id="entrega_valor" name="valor" readonly>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label for="entregador" class="form-label">Entregador Responsável</label>
+                        <select class="form-select" id="entregador" name="entregador" required>
+                            <option value="">Selecione o entregador</option>
+                            {% for entregador in entregadores %}
+                            <option value="{{ entregador.id }}">{{ entregador.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Textarea para observações -->
+                    <div class="mt-3">
+                        <label for="observacoes" class="form-label">Observações da Entrega (opcional)</label>
+                        <textarea class="form-control" id="observacoes" name="observacoes" rows="3"
+                            placeholder="Digite observações importantes, se houver..."></textarea>
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="acao_entrega" class="form-label">Ação da Entrega</label>
+                        <select class="form-select" id="acao_entrega" name="acao_entrega" required>
+                            <option value="confirmar" selected>Confirmar Entrega</option>
+                            <option value="retirar">Retirar Entrega</option>
+                        </select>
+                    </div>
+
+                    <div class="form-check mt-3" id="checkConfirmarEntrega">
+                        <input class="form-check-input" type="checkbox" id="confirmar_entrega" name="confirmar_entrega"
+                            required>
+                        <label class="form-check-label" for="confirmar_entrega">
+                            Confirmo que a entrega foi realizada
+                        </label>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="pedido_id" id="pedido_id">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Confirmar Entrega</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
 <form id="formExcluir" method="POST" style="display: none;">
 </form>
 
